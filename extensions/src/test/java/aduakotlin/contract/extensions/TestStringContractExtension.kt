@@ -87,7 +87,6 @@ public class TestStringContractExtension {
         // given
         val myValue1 = "Kotlin"
         val myNullValue: String? = null
-        val myObj = 0
 
         // when
         myValue1.ifEqualToThen("Kotlin") {
@@ -176,7 +175,6 @@ public class TestStringContractExtension {
     @Test
     fun testMiscellaneous() {
         val a: String? = null
-        val str: Any = "abc"
         if (a.isANonNullInteger()) {
             a.plus(4)
         } else {

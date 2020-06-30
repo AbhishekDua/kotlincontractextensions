@@ -1,6 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
+
+def githubProperties = new Properties()
+githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -20,7 +26,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
 
+publishing {
+    publications {
+        artifactory(MavenPublication) {
+            groupId 'aduakotlin.contract.extensions'
+            artifactId 'extensions'
+            version '0.0.1'
+            artifact("$buildDir/outputs/aar/extensions-release.aar")
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each { dependency ->
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', dependency.group)
+                    dependencyNode.appendNode('artifactId', dependency.name)
+                    dependencyNode.appendNode('version', dependency.version)
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name 'Github'
+            url 'https://maven.pkg.github.com/AbhishekDua/kotlincontractextensions'
+            credentials {
+                username githubProperties.username
+                password githubProperties.password
+            }
+        }
+    }
 }
 
 dependencies {
